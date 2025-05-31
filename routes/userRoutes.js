@@ -1,17 +1,35 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/authController");
+const userController = require("../controllers/userController");
 const { protect } = require("../middleware/auth");
 
-router.post("/register", authController.register);
-router.post("/login", authController.login);
-router.post("/google", authController.googleSignIn);
+// All routes require authentication
+router.use(protect);
 
-router.get("/verify-email/:token", authController.verifyEmail);
-router.post("/resend-verification", authController.resendVerification);
-router.post("/forgot-password", authController.forgotPassword);
+// Profile Management Routes
+router.get("/profile", userController.getProfile);
+router.put("/profile", userController.updateProfile);
+router.get("/dashboard", userController.getDashboard);
 
-router.put("/reset-password/:token", authController.resetPassword);
-router.get("/me", protect, authController.getMe);
+// Skills Management Routes
+router.post("/skills/teach", userController.addSkillToTeach);
+router.post("/skills/learn", userController.addSkillToLearn);
+router.put("/skills/teach/:skillId", userController.updateSkillToTeach);
+router.delete("/skills/teach/:skillId", userController.removeSkillToTeach);
+router.delete("/skills/learn/:skillId", userController.removeSkillToLearn);
+
+// Availability Routes
+router.put("/availability", userController.updateAvailability);
+
+// Search and Discovery Routes
+router.get("/search", userController.searchUsers);
+router.get("/categories", userController.getSkillCategories);
+
+// User Profile Routes
+router.get("/:userId", userController.getUserById);
+router.post("/:userId/rating", userController.addRating);
+
+// Activity Routes
+router.put("/activity", userController.updateActivity);
 
 module.exports = router;

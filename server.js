@@ -2,8 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
-const authRouter = require("./routes/userRoutes");
-
+const authRouter = require("./routes/authRoutes");
+const userRouter = require("./routes/userRoutes");
 // Load env vars
 dotenv.config();
 
@@ -19,6 +19,7 @@ app.use(cors());
 
 // Define Routes
 app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 
 // Global Error handler middleware
 app.use((err, req, res, next) => {

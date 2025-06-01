@@ -34,6 +34,7 @@ exports.updateProfile = async (req, res, next) => {
       bio,
       phoneNumber,
       dateOfBirth,
+      avatar,
       gender,
       location,
       occupation,
@@ -51,6 +52,7 @@ exports.updateProfile = async (req, res, next) => {
 
     // Update fields if provided
     if (name) user.name = name;
+    if (avatar) user.avatar = avatar;
     if (bio !== undefined) user.bio = bio;
     if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
     if (dateOfBirth) user.dateOfBirth = dateOfBirth;

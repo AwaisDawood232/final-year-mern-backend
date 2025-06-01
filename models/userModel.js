@@ -115,7 +115,6 @@ const RatingSchema = new mongoose.Schema({
 }, { _id: true });
 
 const UserSchema = new mongoose.Schema({
-  // Existing Authentication Fields
   name: {
     type: String,
     required: [true, "Please provide a name"],

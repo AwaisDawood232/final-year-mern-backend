@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const matchingController = require("../controllers/matchingController");
 const { protect } = require("../middleware/auth");
 
 // All routes require authentication
@@ -20,6 +21,13 @@ router.delete("/skills/learn/:skillId", userController.removeSkillToLearn);
 
 // Availability Routes
 router.put("/availability", userController.updateAvailability);
+
+// Matching Routes
+router.get("/matches", matchingController.getProfileMatches);
+router.get("/matches/filters", matchingController.getFilterOptions);
+
+// Profile Viewing Routes
+router.get("/view/:userId", matchingController.viewUserProfile);
 
 // Search and Discovery Routes
 router.get("/search", userController.searchUsers);

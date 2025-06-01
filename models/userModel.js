@@ -178,10 +178,6 @@ const UserSchema = new mongoose.Schema({
     city: String,
     state: String,
     country: String,
-    coordinates: {
-      latitude: Number,
-      longitude: Number,
-    },
   },
   
   // Professional Information
@@ -347,7 +343,7 @@ UserSchema.pre("save", async function (next) {
 // Calculate profile completion percentage
 UserSchema.methods.calculateProfileCompletion = function() {
   let completionScore = 0;
-  const totalFields = 10;
+  const totalFields = 8;
   
   if (this.name) completionScore++;
   if (this.bio) completionScore++;
@@ -356,8 +352,8 @@ UserSchema.methods.calculateProfileCompletion = function() {
   if (this.occupation) completionScore++;
   if (this.skillsToTeach && this.skillsToTeach.length > 0) completionScore++;
   if (this.skillsToLearn && this.skillsToLearn.length > 0) completionScore++;
-  if (this.languages && this.languages.length > 0) completionScore++;
-  if (this.availability && this.availability.timezone) completionScore++;
+  // if (this.languages && this.languages.length > 0) completionScore++;
+  // if (this.availability && this.availability.timezone) completionScore++;
   if (this.phoneNumber) completionScore++;
   
   const percentage = (completionScore / totalFields) * 100;

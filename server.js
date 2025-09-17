@@ -1,9 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
+const adminRouter = require("./routes/adminRoutes");
+const swapRequestRouter = require("./routes/swapRequestRoutes");
+const messageRouter = require("./routes/messageRoutes");
 // Load env vars
 dotenv.config();
 
@@ -12,14 +17,29 @@ connectDB();
 
 // Initialize app
 const app = express();
+const httpServer = createServer(app);
+
+// Initialize Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  },
+});
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  credentials: true,
+}));
 
 // Define Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/swap-requests", swapRequestRouter);
+app.use("/api/messages", messageRouter);
 
 // Global Error handler middleware
 app.use((err, req, res, next) => {
@@ -35,8 +55,11 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Socket.io setup
+require("./socket/socketHandlers")(io);
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

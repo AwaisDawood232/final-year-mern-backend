@@ -25,11 +25,15 @@ const messageSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["text", "emoji", "file", "system"],
+      enum: ["text", "emoji", "file", "system", "session_invite"],
       default: "text",
     },
     fileUrl: {
       type: String,
+    },
+    sessionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
     },
     isRead: {
       type: Boolean,
@@ -78,6 +82,13 @@ messageSchema.statics.getConversation = async function (swapRequestId, limit = 5
   })
     .populate("sender", "name avatar")
     .populate("receiver", "name avatar")
+    .populate({
+      path: "sessionId",
+      populate: [
+        { path: "organizer", select: "name email avatar" },
+        { path: "attendee", select: "name email avatar" }
+      ]
+    })
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(skip);

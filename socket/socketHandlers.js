@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Message = require("../models/messageModel");
 const SwapRequest = require("../models/swapRequestModel");
 const User = require("../models/userModel");
+const Session = require("../models/sessionModel");
 
 const socketAuth = async (socket, next) => {
   try {
@@ -94,7 +95,7 @@ module.exports = (io) => {
     // Handle sending messages
     socket.on("send_message", async (data) => {
       try {
-        const { swapRequestId, content, type = "text" } = data;
+        const { swapRequestId, content, type = "text", sessionId } = data;
 
         // Verify swap request and authorization
         const swapRequest = await SwapRequest.findById(swapRequestId)
@@ -126,11 +127,23 @@ module.exports = (io) => {
           receiver: receiverId,
           content,
           type,
+          sessionId: sessionId || undefined,
         });
 
         // Populate sender and receiver info
         await message.populate("sender", "name avatar");
         await message.populate("receiver", "name avatar");
+
+        // If it's a session invite, populate session data
+        if (type === "session_invite" && sessionId) {
+          await message.populate({
+            path: "sessionId",
+            populate: [
+              { path: "organizer", select: "name email avatar" },
+              { path: "attendee", select: "name email avatar" }
+            ]
+          });
+        }
 
         // Emit message to conversation room
         io.to(`swap_${swapRequestId}`).emit("new_message", message);

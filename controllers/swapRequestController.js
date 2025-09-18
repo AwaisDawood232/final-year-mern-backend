@@ -201,6 +201,20 @@ exports.acceptSwapRequest = async (req, res) => {
       .populate("sender", "name email avatar")
       .populate("receiver", "name email avatar");
 
+    // Award gamification points for accepting swap
+    const { awardPoints, updateUserStats, checkBadges } = require("../services/gamificationService");
+
+    await awardPoints(request.sender, "send_swap_request", 10, "Swap request accepted by partner");
+    await awardPoints(request.receiver, "accept_swap_request", 15, "Accepted a swap request");
+
+    // Update swap statistics
+    await updateUserStats(request.sender, "swap_completed", 1);
+    await updateUserStats(request.receiver, "swap_completed", 1);
+
+    // Check for new badges
+    await checkBadges(request.sender);
+    await checkBadges(request.receiver);
+
     res.status(200).json({
       success: true,
       message: "Swap request accepted successfully",

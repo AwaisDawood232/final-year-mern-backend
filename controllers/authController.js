@@ -135,6 +135,10 @@ exports.login = async (req, res, next) => {
       return next(new createError("Please verify your email to login", 401));
     }
 
+    // Update login streak for gamification
+    const { updateLoginStreak } = require("../services/gamificationService");
+    await updateLoginStreak(user._id);
+
     // Return JWT token
     sendTokenResponse(user, 200, res);
   } catch (err) {
@@ -184,6 +188,10 @@ exports.googleSignIn = async (req, res, next) => {
         isVerified: true, // Auto-verify Google users
       });
     }
+
+    // Update login streak for gamification
+    const { updateLoginStreak } = require("../services/gamificationService");
+    await updateLoginStreak(user._id);
 
     // Return JWT token
     sendTokenResponse(user, 200, res);

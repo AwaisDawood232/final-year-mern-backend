@@ -9,11 +9,18 @@ const userRouter = require("./routes/userRoutes");
 const adminRouter = require("./routes/adminRoutes");
 const swapRequestRouter = require("./routes/swapRequestRoutes");
 const messageRouter = require("./routes/messageRoutes");
+const sessionRouter = require("./routes/sessionRoutes");
+const ratingRouter = require("./routes/ratingRoutes");
+const gamificationRouter = require("./routes/gamificationRoutes");
 // Load env vars
 dotenv.config();
 
 // Connect to database
 connectDB();
+
+// Initialize gamification badges
+const { initializeBadges } = require("./services/gamificationService");
+initializeBadges();
 
 // Initialize app
 const app = express();
@@ -40,6 +47,9 @@ app.use("/api/users", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/swap-requests", swapRequestRouter);
 app.use("/api/messages", messageRouter);
+app.use("/api/sessions", sessionRouter);
+app.use("/api/ratings", ratingRouter);
+app.use("/api/gamification", gamificationRouter);
 
 // Global Error handler middleware
 app.use((err, req, res, next) => {
@@ -57,6 +67,9 @@ app.use((err, req, res, next) => {
 
 // Socket.io setup
 require("./socket/socketHandlers")(io);
+
+// Store io instance in app for use in controllers
+app.set("io", io);
 
 const PORT = process.env.PORT || 5000;
 

@@ -159,3 +159,11 @@ require("./socket/socketHandlers")(io);
     process.exit(1);
   }
 })();
+
+
+
+// Test for server checking code below
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "Server is running" });
+});
+// Test for server checking code
